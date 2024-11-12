@@ -6,9 +6,7 @@ pipeline {
     }
 
     environment {
-        // Ces variables ne sont plus nécessaires si vous ne utilisez pas PostgreSQL
-        // POSTGRES_HOST = "localhost"
-        // POSTGRES_PORT = "5432"
+        // Pas de variables d'environnement spécifiées ici
     }
 
     stages {
@@ -36,8 +34,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('spring-petclinic') {
-                    // Tester avec un profil sans PostgreSQL
-                    bat 'mvnw.cmd test -Dspring.profiles.active=test' // Utiliser un profil de test ou le profil par défaut
+                    bat 'mvnw.cmd test -Dspring.profiles.active=test' // Utiliser un profil de test
                 }
             }
         }
