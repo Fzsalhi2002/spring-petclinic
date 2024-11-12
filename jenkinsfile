@@ -30,17 +30,7 @@ pipeline {
 }
 
 
-        stage('Start PostgreSQL') {
-            steps {
-                script {
-                    // Lancer un conteneur Docker PostgreSQL pour les tests
-                    def postgresContainer = docker.image('postgres:latest')
-                    postgresContainer.run('-d -e POSTGRES_DB=${POSTGRES_DB} -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -p ${POSTGRES_PORT}:${POSTGRES_PORT}')
-                    // Attendre que le conteneur soit prêt (ajustez le délai en fonction de la vitesse de démarrage de votre machine)
-                    sleep(time: 30, unit: 'SECONDS')
-                }
-            }
-        }
+       
 
         stage('Build') {
             steps {
