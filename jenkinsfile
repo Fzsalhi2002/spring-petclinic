@@ -15,14 +15,20 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                script {
-                    // Cloner le dépôt Git
-                    bat 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
-                }
+       stage('Clone Repository') {
+    steps {
+        script {
+            // Vérifier si le répertoire existe avant de cloner
+            def repoDir = 'spring-petclinic'
+            if (!fileExists(repoDir)) {
+                bat "git clone https://github.com/Fzsalhi2002/spring-petclinic.git"
+            } else {
+                echo "Le dépôt existe déjà dans le répertoire ${repoDir}, passage à l'étape suivante."
             }
         }
+    }
+}
+
 
         stage('Start PostgreSQL') {
             steps {
