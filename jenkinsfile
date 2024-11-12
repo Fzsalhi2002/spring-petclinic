@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'M3' // Assurez-vous que "Maven" est le nom configuré dans Jenkins
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Cloner le dépôt
+                sh 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
+                // Aller dans le dossier cloné
+                dir('spring-petclinic') {
+                    echo "Cloned repository and moved to 'spring-petclinic' directory"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('spring-petclinic') {
+                    // Effectuer le build avec Maven
+                    sh './mvnw clean install'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('spring-petclinic') {
+                    // Exécuter les tests
+                    sh './mvnw test'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                dir('spring-petclinic') {
+                    // Packager l'application
+                    sh './mvnw package'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build and tests succeeded!"
+        }
+        failure {
+            echo "Build failed!"
+        }
+    }
+}
