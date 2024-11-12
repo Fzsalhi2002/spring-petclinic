@@ -9,7 +9,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Cloner le dépôt
-                sh 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
+                bat 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
                 // Aller dans le dossier cloné
                 dir('spring-petclinic') {
                     echo "Cloned repository and moved to 'spring-petclinic' directory"
@@ -21,7 +21,7 @@ pipeline {
             steps {
                 dir('spring-petclinic') {
                     // Effectuer le build avec Maven
-                    sh './mvnw clean install'
+                    bat 'mvnw.cmd clean install' // Utilisez mvnw.cmd pour Windows
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 dir('spring-petclinic') {
                     // Exécuter les tests
-                    sh './mvnw test'
+                    bat 'mvnw.cmd test'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 dir('spring-petclinic') {
                     // Packager l'application
-                    sh './mvnw package'
+                    bat 'mvnw.cmd package'
                 }
             }
         }
