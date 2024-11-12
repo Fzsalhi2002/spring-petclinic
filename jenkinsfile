@@ -6,36 +6,28 @@ pipeline {
     }
 
     environment {
-        // Définir des variables d'environnement pour PostgreSQL
-        POSTGRES_HOST = "localhost"
-        POSTGRES_PORT = "5432"
-        POSTGRES_DB = "petclinic"
-        POSTGRES_USER = "user"
-        POSTGRES_PASSWORD = "password"
+        // Ces variables ne sont plus nécessaires si vous ne utilisez pas PostgreSQL
+        // POSTGRES_HOST = "localhost"
+        // POSTGRES_PORT = "5432"
     }
 
     stages {
-       stage('Clone Repository') {
-    steps {
-        script {
-            // Vérifier si le répertoire existe avant de cloner
-            def repoDir = 'spring-petclinic'
-            if (!fileExists(repoDir)) {
-                bat "git clone https://github.com/Fzsalhi2002/spring-petclinic.git"
-            } else {
-                echo "Le dépôt existe déjà dans le répertoire ${repoDir}, passage à l'étape suivante."
+        stage('Clone Repository') {
+            steps {
+                script {
+                    def repoDir = 'spring-petclinic'
+                    if (!fileExists(repoDir)) {
+                        bat "git clone https://github.com/Fzsalhi2002/spring-petclinic.git"
+                    } else {
+                        echo "Le dépôt existe déjà dans le répertoire ${repoDir}, passage à l'étape suivante."
+                    }
+                }
             }
         }
-    }
-}
-
-
-       
 
         stage('Build') {
             steps {
                 dir('spring-petclinic') {
-                    // Construction du projet avec Maven
                     bat 'mvnw.cmd clean install'
                 }
             }
@@ -44,8 +36,8 @@ pipeline {
         stage('Test') {
             steps {
                 dir('spring-petclinic') {
-                    // Exécuter les tests avec le profil PostgreSQL
-                    bat 'mvnw.cmd test -Dspring.profiles.active=postgres'
+                    // Tester avec un profil sans PostgreSQL
+                    bat 'mvnw.cmd test -Dspring.profiles.active=test' // Utiliser un profil de test ou le profil par défaut
                 }
             }
         }
@@ -53,7 +45,6 @@ pipeline {
         stage('Package') {
             steps {
                 dir('spring-petclinic') {
-                    // Emballer l'application pour la production
                     bat 'mvnw.cmd package'
                 }
             }
