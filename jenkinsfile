@@ -2,26 +2,30 @@ pipeline {
     agent any
 
     tools {
-        maven 'M3' // Assurez-vous que "Maven" est le nom configuré dans Jenkins
+        maven 'M3'
     }
 
     stages {
+        stage('Prepare Workspace') {
+            steps {
+                // Supprimer le dossier existant
+                dir('spring-petclinic') {
+                    deleteDir()
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 // Cloner le dépôt
                 bat 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
-                // Aller dans le dossier cloné
-                dir('spring-petclinic') {
-                    echo "Cloned repository and moved to 'spring-petclinic' directory"
-                }
             }
         }
 
         stage('Build') {
             steps {
                 dir('spring-petclinic') {
-                    // Effectuer le build avec Maven
-                    bat 'mvnw.cmd clean install' // Utilisez mvnw.cmd pour Windows
+                    bat 'mvnw.cmd clean install'
                 }
             }
         }
@@ -29,7 +33,6 @@ pipeline {
         stage('Test') {
             steps {
                 dir('spring-petclinic') {
-                    // Exécuter les tests
                     bat 'mvnw.cmd test'
                 }
             }
@@ -38,7 +41,6 @@ pipeline {
         stage('Package') {
             steps {
                 dir('spring-petclinic') {
-                    // Packager l'application
                     bat 'mvnw.cmd package'
                 }
             }
