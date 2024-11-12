@@ -2,29 +2,44 @@ pipeline {
     agent any
 
     tools {
-        maven 'M3'
+        maven 'M3'  // Assurez-vous que Maven est installé et que le nom est correct
+    }
+
+    environment {
+        // Définir des variables d'environnement pour PostgreSQL
+        POSTGRES_HOST = "localhost"
+        POSTGRES_PORT = "5432"
+        POSTGRES_DB = "petclinic"
+        POSTGRES_USER = "user"
+        POSTGRES_PASSWORD = "password"
     }
 
     stages {
-        stage('Prepare Workspace') {
+        stage('Clone Repository') {
             steps {
-                // Supprimer le dossier existant
-                dir('spring-petclinic') {
-                    deleteDir()
+                script {
+                    // Cloner le dépôt Git
+                    bat 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
                 }
             }
         }
 
-        stage('Clone Repository') {
+        stage('Start PostgreSQL') {
             steps {
-                // Cloner le dépôt
-                bat 'git clone https://github.com/Fzsalhi2002/spring-petclinic.git'
+                script {
+                    // Lancer un conteneur Docker PostgreSQL pour les tests
+                    def postgresContainer = docker.image('postgres:latest')
+                    postgresContainer.run('-d -e POSTGRES_DB=${POSTGRES_DB} -e POSTGRES_USER=${POSTGRES_USER} -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} -p ${POSTGRES_PORT}:${POSTGRES_PORT}')
+                    // Attendre que le conteneur soit prêt (ajustez le délai en fonction de la vitesse de démarrage de votre machine)
+                    sleep(time: 30, unit: 'SECONDS')
+                }
             }
         }
 
         stage('Build') {
             steps {
                 dir('spring-petclinic') {
+                    // Construction du projet avec Maven
                     bat 'mvnw.cmd clean install'
                 }
             }
@@ -33,7 +48,8 @@ pipeline {
         stage('Test') {
             steps {
                 dir('spring-petclinic') {
-                    bat 'mvnw.cmd test'
+                    // Exécuter les tests avec le profil PostgreSQL
+                    bat 'mvnw.cmd test -Dspring.profiles.active=postgres'
                 }
             }
         }
@@ -41,6 +57,7 @@ pipeline {
         stage('Package') {
             steps {
                 dir('spring-petclinic') {
+                    // Emballer l'application pour la production
                     bat 'mvnw.cmd package'
                 }
             }
