@@ -5,9 +5,7 @@ pipeline {
         maven 'M3'  // Assurez-vous que Maven est installé et que le nom est correct
     }
 
-    environment {
-        // Pas de variables d'environnement spécifiées ici
-    }
+
 
     stages {
         stage('Clone Repository') {
